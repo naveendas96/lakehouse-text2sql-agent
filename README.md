@@ -2,6 +2,10 @@
 
 Business users ask questions in plain English, and the agent answers with **safe, certified SQL** against a lakehouse. It runs on DuckDB locally, with Snowflake and Databricks adapters for real warehouses.
 
+[![Demo: real CLI run](docs/demo/demo.jpg)](docs/demo/demo.mp4)
+
+*Demo recorded from the real CLI output ([MP4](docs/demo/demo.mp4)). More projects: [thenavasoft.com/projects](https://thenavasoft.com/projects.html)*
+
 ## Problem
 Letting an LLM write SQL against a warehouse raises three risks: wrong numbers (the wrong metric or join), unsafe statements (DML, exfiltration, runaway scans) and silent failure. This repo addresses each with a semantic layer, AST guardrails and a bounded self-correction loop, then measures accuracy on a benchmark.
 
