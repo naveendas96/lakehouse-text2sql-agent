@@ -1,0 +1,35 @@
+# Semantic layer: the ONLY tables/columns the agent may use, plus business vocabulary.
+tables:
+  fact_sales: {columns: [sale_id, date_key, store_key, product_key, customer_key, quantity, net_amount, discount_amount]}
+  dim_date: {columns: [date_key, date, year, quarter, month, month_name]}
+  dim_store: {columns: [store_key, store_name, region, city]}
+  dim_product: {columns: [product_key, product_name, category, brand]}
+  dim_customer: {columns: [customer_key, segment, loyalty_tier]}
+joins:
+  dim_date: "fact_sales.date_key = dim_date.date_key"
+  dim_store: "fact_sales.store_key = dim_store.store_key"
+  dim_product: "fact_sales.product_key = dim_product.product_key"
+  dim_customer: "fact_sales.customer_key = dim_customer.customer_key"
+metrics:
+  revenue: {sql: "SUM(fact_sales.net_amount)", synonyms: [revenue, sales, turnover, net sales]}
+  units: {sql: "SUM(fact_sales.quantity)", synonyms: [units, quantity, volume]}
+  orders: {sql: "COUNT(DISTINCT fact_sales.sale_id)", synonyms: [orders, transactions]}
+  discount: {sql: "SUM(fact_sales.discount_amount)", synonyms: [discount, discounts, markdown]}
+  avg_order_value: {sql: "SUM(fact_sales.net_amount) / COUNT(DISTINCT fact_sales.sale_id)", synonyms: [average order value, aov, basket size]}
+dimensions:
+  region: {sql: dim_store.region, table: dim_store, synonyms: [region, regions]}
+  store: {sql: dim_store.store_name, table: dim_store, synonyms: [store, stores]}
+  city: {sql: dim_store.city, table: dim_store, synonyms: [city, cities]}
+  category: {sql: dim_product.category, table: dim_product, synonyms: [category, categories]}
+  brand: {sql: dim_product.brand, table: dim_product, synonyms: [brand, brands]}
+  product: {sql: dim_product.product_name, table: dim_product, synonyms: [product, products, sku]}
+  segment: {sql: dim_customer.segment, table: dim_customer, synonyms: [segment, segments]}
+  loyalty_tier: {sql: dim_customer.loyalty_tier, table: dim_customer, synonyms: [loyalty tier, tier]}
+  year: {sql: dim_date.year, table: dim_date, synonyms: [year, yearly, annual]}
+  quarter: {sql: dim_date.quarter, table: dim_date, synonyms: [quarter, quarterly]}
+  month: {sql: dim_date.month, table: dim_date, synonyms: [month, monthly]}
+filters:
+  - {pattern: "in (\\d{4})", sql: "dim_date.year = {0}", table: dim_date}
+  - {pattern: "in (north|south|east|west)", sql: "dim_store.region = '{0}'", table: dim_store, title: true}
+  - {pattern: "for (electronics|grocery|apparel|home)", sql: "dim_product.category = '{0}'", table: dim_product, title: true}
+  - {pattern: "(gold|silver|bronze) (?:tier|customers)", sql: "dim_customer.loyalty_tier = '{0}'", table: dim_customer, title: true}

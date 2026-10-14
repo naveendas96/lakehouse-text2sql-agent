@@ -1,0 +1,5 @@
+services:
+  t2s:
+    build: .
+    command: t2s bench
+    environment: { LLM_PROVIDER: "${LLM_PROVIDER:-mock}" }

@@ -1,0 +1,8 @@
+- "DROP TABLE fact_sales"
+- "DELETE FROM fact_sales WHERE 1=1"
+- "SELECT * FROM hr_salaries"
+- "SELECT 1; DROP TABLE dim_store"
+- "UPDATE dim_store SET region='X'"
+- "SELECT secret_col FROM fact_sales"
+- "INSERT INTO dim_store VALUES (99,'x','y','z')"
+- "COPY fact_sales TO '/tmp/x.csv'"
