@@ -53,12 +53,18 @@ Correctness means the result set matches a hand-written gold query.
 
 The three misses are intentional: they need period-over-period comparison, ratios, and telling a filter apart from a group-by. They mark where a real LLM (`LLM_PROVIDER=...`) has to take over from the rule-based compiler, and the benchmark makes that gap measurable.
 
-## Quickstart
+## Run it in 60 seconds
 ```bash
-python3.11 -m venv .venv && . .venv/bin/activate
-make install && make test && make bench
+python3 -m venv .venv && . .venv/bin/activate
+pip install -e ".[dev]"
 t2s ask "top 5 stores by revenue"
-LLM_PROVIDER=ollama LLM_MODEL=qwen2.5-coder:1.5b t2s bench     # compare a real model
+```
+The default mock compiler emits the SQL, runs it on the local DuckDB star schema, and prints the top five stores. No warehouse account or API key is required.
+
+Then, if you want the benchmark or a live model:
+```bash
+make test && make bench
+LLM_PROVIDER=ollama LLM_MODEL=qwen2.5-coder:1.5b t2s bench
 pip install -e ".[snowflake]"   # then set SNOWFLAKE_* env vars and use SnowflakeAdapter
 ```
 

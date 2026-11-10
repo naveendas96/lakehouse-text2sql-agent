@@ -12,7 +12,9 @@ agent = Agent()
 
 
 @pytest.mark.parametrize("sql", ["DROP TABLE fact_sales", "SELECT * FROM hr_salaries", "SELECT 1; SELECT 2",
-                                 "DELETE FROM fact_sales", "SELECT nope FROM fact_sales"])
+                                 "DELETE FROM fact_sales", "SELECT nope FROM fact_sales",
+                                 "UPDATE fact_sales SET net_amount = 0", "COPY fact_sales TO '/tmp/x.csv'",
+                                 "CREATE TABLE x AS SELECT * FROM fact_sales"])
 def test_guard_blocks(sql):
     with pytest.raises(SQLRejected):
         validate(sql, ALLOW)
@@ -64,3 +66,9 @@ def test_databricks_adapter_with_mock_connector():
 def test_benchmark_floor():
     r = run(agent)
     assert r["execution_accuracy"] >= 0.75 and r["guardrail_block_rate"] == 1.0
+
+
+def test_guard_keeps_smaller_limit_and_allows_cte():
+    assert "LIMIT 5" in validate("SELECT sale_id FROM fact_sales LIMIT 5", ALLOW)
+    out = validate("WITH s AS (SELECT sale_id FROM fact_sales) SELECT sale_id FROM s", ALLOW)
+    assert "LIMIT 1000" in out
